@@ -164,11 +164,10 @@ function DragGallery() {
         className="flex gap-5 py-6 px-2" style={{ width: 'max-content' }}>
         {GALLERY_ITEMS.map((g, i) => (
           <motion.div key={g.label}
-            style={{ width: 300, height: 400, flexShrink: 0 }}
+            style={{ width: 300, height: 400, flexShrink: 0, border: '1px solid rgba(255,255,255,.08)' }}
             whileHover={!dragging ? { scale: 1.04, rotateY: i % 2 === 0 ? -4 : 4, z: 30 } : {}}
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-            className="rounded-3xl overflow-hidden relative border"
-            style2={{ border: `1px solid rgba(255,255,255,.08)` } as React.CSSProperties}>
+            className="rounded-3xl overflow-hidden relative">
             <img src={g.img} alt={g.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105" draggable={false} />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,rgba(7,11,26,.9) 0%,rgba(7,11,26,.1) 55%,transparent 100%)' }} />
             <div className="absolute top-5 right-5 font-black text-5xl select-none" style={{ color: g.color, opacity: 0.15, fontFamily: 'var(--font-grotesk)' }}>
