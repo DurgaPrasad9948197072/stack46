@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Navbar from './Navbar'
-import Footer from './Footer'
+import { CinematicFooter } from './ui/motion-footer'
 
 const STANDALONE_ROUTES = ['/login', '/signup']
 
@@ -17,7 +17,7 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
     <>
       <Navbar />
       <div style={{ paddingTop: '72px' }}>{children}</div>
-      <Footer />
+      <CinematicFooter />
     </>
   )
 }
