@@ -2,34 +2,18 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
-  motion, AnimatePresence, useInView, useScroll, useTransform,
+  motion, useInView, useTransform,
   useMotionValue, useSpring, useMotionTemplate,
 } from 'framer-motion'
 import { useReveal } from '@/hooks/useReveal'
+import TrionnHero from '@/components/home/TrionnHero'
 import {
   Code2, Cloud, Sparkles, Smartphone, Plug, ShieldCheck,
-  Star, ArrowRight, GitBranch, Check, TrendingUp, ArrowUpRight,
+  Star, ArrowUpRight,
 } from 'lucide-react'
 
 /* ══════════════════ DATA ══════════════════ */
 const MARQUEE_TECH = ['React','Next.js','TypeScript','Node.js','Python','Go','AWS','GCP','Azure','Docker','Kubernetes','PostgreSQL','GraphQL','Figma','Flutter','Terraform']
-
-const COMMITS = [
-  { hash: 'a3f2c1d', msg: 'feat: real-time WebSocket subscriptions', author: 'SC', branch: 'main' },
-  { hash: 'b9e4d7a', msg: 'perf: bundle size -34% → 102kB gzip',    author: 'JO', branch: 'main' },
-  { hash: 'c1f8e9b', msg: 'fix: SQL query latency -60% via index',  author: 'PA', branch: 'hotfix' },
-  { hash: 'd4a2f1c', msg: 'feat: AI inference pipeline v2 (94%)',    author: 'SC', branch: 'main' },
-  { hash: 'e7b3c9d', msg: 'test: 847 suites → all green',           author: 'JO', branch: 'ci' },
-  { hash: 'f1d6e8a', msg: 'chore: deploy v2.4.1 to production',     author: 'PA', branch: 'main' },
-  { hash: 'g8c5b2e', msg: 'feat: Stripe webhook handler + retry',   author: 'SC', branch: 'main' },
-  { hash: 'h3f9d1a', msg: 'refactor: auth middleware, -18% mem',    author: 'JO', branch: 'main' },
-]
-
-const HERO_PROJECTS = [
-  { name: 'LogiFlow',   tag: 'FinTech · Supply Chain', img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80', color: '#2AACE2', metric: '25% cost cut' },
-  { name: 'NexusAI',   tag: 'SaaS · AI Platform',     img: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80', color: '#FFC845', metric: '3× speed' },
-  { name: 'RetailHub',  tag: 'E-Commerce · Mobile',   img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80', color: '#22c55e', metric: '4.9★ App Store' },
-]
 
 const FEATURES = [
   { icon: Code2,      title: 'Full-Stack Development', desc: 'Next.js, Node.js, TypeScript — pixel-perfect UIs to bulletproof APIs, owned end-to-end.', accent: '#2AACE2', span: 1 },
@@ -227,86 +211,6 @@ function FloatingDots() {
   )
 }
 
-/* SVG node graph hero background */
-function NodeGraph() {
-  const nodes = [{ cx: '8%', cy: '20%' }, { cx: '28%', cy: '8%' }, { cx: '52%', cy: '15%' }, { cx: '75%', cy: '5%' }, { cx: '90%', cy: '30%' }, { cx: '82%', cy: '60%' }, { cx: '60%', cy: '75%' }, { cx: '35%', cy: '80%' }, { cx: '15%', cy: '65%' }]
-  const lines = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,0],[2,6],[1,7]]
-  return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.16, zIndex: 0 }}>
-      <defs>
-        <linearGradient id="nlg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#1E2A78" /><stop offset="50%" stopColor="#2AACE2" /><stop offset="100%" stopColor="#FFC845" />
-        </linearGradient>
-      </defs>
-      {lines.map(([a, b], i) => <line key={i} x1={nodes[a].cx} y1={nodes[a].cy} x2={nodes[b].cx} y2={nodes[b].cy} stroke="url(#nlg)" strokeWidth="1" style={{ animation: `nodePulse ${3 + i % 4}s ease-in-out ${i * 0.3}s infinite` }} />)}
-      {nodes.map((n, i) => <circle key={i} cx={n.cx} cy={n.cy} r="4" fill="url(#nlg)" style={{ animation: `nodePulse ${2 + i % 3}s ease-in-out ${i * 0.4}s infinite` }} />)}
-    </svg>
-  )
-}
-
-/* Commits feed */
-function CommitsFeed() {
-  const doubled = [...COMMITS, ...COMMITS]
-  return (
-    <div className="overflow-hidden" style={{ height: 220 }}>
-      <div className="commits-scroll">
-        {doubled.map((c, i) => (
-          <div key={i} className="flex items-start gap-2.5 px-1 py-2 rounded-xl transition-colors hover:bg-white/[0.04]">
-            <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black flex-shrink-0 mt-0.5" style={{ background: 'rgba(42,172,226,.2)', color: '#2AACE2' }}>{c.author}</div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <GitBranch size={9} style={{ color: '#8892B0', flexShrink: 0 }} />
-                <span className="text-[9px] text-[#8892B0] truncate">{c.branch}</span>
-                <span className="text-[9px] font-mono text-[#4DD0C4] flex-shrink-0">{c.hash.slice(0, 7)}</span>
-              </div>
-              <p className="text-[11px] text-[#F0F4FF] leading-tight truncate">{c.msg}</p>
-            </div>
-            <Check size={11} style={{ color: '#22c55e', flexShrink: 0, marginTop: 2 }} />
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-/* Project carousel */
-function ProjectCarousel() {
-  const [active, setActive] = useState(0)
-  useEffect(() => { const t = setInterval(() => setActive(i => (i + 1) % HERO_PROJECTS.length), 4200); return () => clearInterval(t) }, [])
-  const p = HERO_PROJECTS[active]
-  return (
-    <div className="relative h-full overflow-hidden rounded-[inherit]">
-      <AnimatePresence mode="wait">
-        <motion.img key={active} src={p.img} alt={p.name} className="absolute inset-0 w-full h-full object-cover"
-          initial={{ opacity: 0, scale: 1.06 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: [0.16,1,.3,1] }} />
-      </AnimatePresence>
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,rgba(7,11,26,.95) 0%,rgba(7,11,26,.3) 55%,transparent 100%)' }} />
-      <div className="absolute bottom-0 left-0 right-0 p-5">
-        <AnimatePresence mode="wait">
-          <motion.div key={active} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.4 }}>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold" style={{ background: `${p.color}22`, color: p.color, border: `1px solid ${p.color}40` }}>{p.tag}</span>
-              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold glass" style={{ color: '#22c55e' }}>{p.metric}</span>
-            </div>
-            <p className="font-black text-xl text-[#F0F4FF]" style={{ fontFamily: 'var(--font-grotesk)' }}>{p.name}</p>
-          </motion.div>
-        </AnimatePresence>
-        <div className="flex gap-1.5 mt-3">
-          {HERO_PROJECTS.map((_, i) => (
-            <button key={i} onClick={() => setActive(i)} className="cursor-pointer transition-all duration-300"
-              style={{ width: active === i ? 20 : 6, height: 6, borderRadius: 3, background: active === i ? p.color : 'rgba(255,255,255,.3)' }} />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* Headline word stagger */
-const container = { hidden: {}, visible: { transition: { staggerChildren: 0.13, delayChildren: 0.1 } } }
-const wordAnim   = { hidden: { opacity: 0, y: 52, filter: 'blur(14px)' }, visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.88, ease: [0.16,1,.3,1] } } }
-
 /* ══════════════════ HOME PAGE ══════════════════ */
 export default function HomePage() {
   useReveal()
@@ -314,133 +218,8 @@ export default function HomePage() {
   return (
     <div className="relative overflow-x-hidden">
 
-      {/* ████████ HERO — Bento Dashboard ████████ */}
-      <section className="relative z-10 min-h-screen flex flex-col justify-center px-4 sm:px-6 py-16 pt-24">
-        <NodeGraph />
-        {/* scan line */}
-        <div style={{ position:'absolute',left:0,right:0,height:1,background:'linear-gradient(90deg,transparent,rgba(42,172,226,.5),transparent)',animation:'scanLine 6s linear infinite',top:0,pointerEvents:'none' }} />
-
-        {/* live badge */}
-        <motion.div initial={{ opacity:0, y:-12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5 }} className="flex justify-center mb-8">
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full text-xs font-semibold"
-            style={{ background:'rgba(34,197,94,.08)', border:'1px solid rgba(34,197,94,.25)', color:'#22c55e' }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400" style={{ animation:'pulse-glow 2s ease-in-out infinite' }} />
-            3 client projects in active development · Next delivery Thursday
-          </div>
-        </motion.div>
-
-        {/* BENTO */}
-        <div className="max-w-[1320px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-3">
-          {/* Headline */}
-          <motion.div initial={{ opacity:0,x:-40 }} animate={{ opacity:1,x:0 }} transition={{ duration:0.8,ease:[0.16,1,.3,1] }}
-            className="lg:col-span-7 glass-md rounded-3xl p-8 md:p-10 border border-white/[0.07] flex flex-col justify-between relative overflow-hidden bento-card">
-            <div className="absolute top-0 left-0 w-40 h-40 rounded-full pointer-events-none" style={{ background:'radial-gradient(circle,rgba(30,42,120,.6) 0%,transparent 70%)',transform:'translate(-30%,-30%)' }} />
-            <div className="relative z-10">
-              <motion.h1 variants={container} initial="hidden" animate="visible"
-                className="font-black leading-[0.97] mb-6 overflow-visible"
-                style={{ fontSize:'clamp(3rem,7vw,5.4rem)', fontFamily:'var(--font-grotesk)', letterSpacing:'-0.03em' }}>
-                <motion.span variants={wordAnim} className="block text-[#F0F4FF]">We build</motion.span>
-                <motion.span variants={wordAnim} className="block grad-anim">exceptional</motion.span>
-                <motion.span variants={wordAnim} className="block text-[#F0F4FF]">software.</motion.span>
-              </motion.h1>
-              <motion.p initial={{ opacity:0,y:20 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.8,duration:0.7 }}
-                className="text-base md:text-lg text-[#8892B0] leading-relaxed mb-8 max-w-md">
-                Full-stack agency trusted by 150+ companies — from London startups to global market leaders.
-              </motion.p>
-              <motion.div initial={{ opacity:0,y:16 }} animate={{ opacity:1,y:0 }} transition={{ delay:1,duration:0.6 }} className="flex flex-wrap gap-3 mb-8">
-                <motion.div whileHover={{ scale:1.04,y:-2 }} whileTap={{ scale:0.97 }}>
-                  <Link href="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold"
-                    style={{ background:'linear-gradient(135deg,#1E2A78,#2AACE2)',color:'#fff',boxShadow:'0 0 40px rgba(42,172,226,.45),inset 0 1px 0 rgba(255,255,255,.15)' }}>
-                    Start Your Project <ArrowRight size={14} />
-                  </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale:1.03 }} whileTap={{ scale:0.97 }}>
-                  <Link href="/fleet" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold glass" style={{ color:'#F0F4FF' }}>
-                    View Our Work
-                  </Link>
-                </motion.div>
-              </motion.div>
-            </div>
-            <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:1.3 }}
-              className="flex flex-wrap gap-3 pt-6 relative z-10" style={{ borderTop:'1px solid rgba(255,255,255,.07)' }}>
-              {[{ v:'150+',l:'Projects',c:'#2AACE2' },{ v:'50+',l:'Clients',c:'#FFC845' },{ v:'99.9%',l:'SLA',c:'#22c55e' },{ v:'14-day',l:'Sprints',c:'#4DD0C4' }].map(s => (
-                <div key={s.l} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background:`${s.c}12`,border:`1px solid ${s.c}30` }}>
-                  <span className="font-black text-sm" style={{ color:s.c,fontFamily:'var(--font-grotesk)' }}>{s.v}</span>
-                  <span className="text-xs text-[#8892B0]">{s.l}</span>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Right col */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-3">
-            <motion.div initial={{ opacity:0,y:-24 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.3,duration:0.7,ease:[0.16,1,.3,1] }}
-              className="col-span-1 glass-md rounded-3xl p-5 bento-card border border-white/[0.07] relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 rounded-full pointer-events-none" style={{ background:'radial-gradient(circle,rgba(34,197,94,.25) 0%,transparent 70%)',transform:'translate(30%,-30%)' }} />
-              <div className="flex items-center gap-2 mb-4"><div className="w-2 h-2 rounded-full bg-green-400" style={{ animation:'pulse-glow 2s ease-in-out infinite' }} /><span className="text-xs font-semibold text-[#22c55e]">Deployed</span></div>
-              <div className="font-black text-3xl mb-1" style={{ fontFamily:'var(--font-grotesk)',color:'#F0F4FF' }}>4.2s</div>
-              <div className="text-xs text-[#8892B0] mb-4">build time</div>
-              {[{ l:'Tests',v:'847 ✓',c:'#22c55e' },{ l:'Bundle',v:'102kB',c:'#2AACE2' },{ l:'Latency',v:'9ms',c:'#FFC845' }].map(r => (
-                <div key={r.l} className="flex justify-between text-xs mb-1"><span className="text-[#8892B0]">{r.l}</span><span className="font-semibold" style={{ color:r.c }}>{r.v}</span></div>
-              ))}
-            </motion.div>
-            <motion.div initial={{ opacity:0,y:-24 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.45,duration:0.7,ease:[0.16,1,.3,1] }}
-              className="col-span-1 glass-md rounded-3xl p-5 bento-card border border-white/[0.07] flex flex-col justify-between relative overflow-hidden">
-              <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ background:'radial-gradient(ellipse at 50% 120%,rgba(255,200,69,.18) 0%,transparent 70%)' }} />
-              <div className="text-xs font-semibold text-[#8892B0] mb-2">Avg client ROI</div>
-              <div className="font-black leading-none mb-1" style={{ fontSize:'3rem',fontFamily:'var(--font-grotesk)',color:'#FFC845' }}>3.2×</div>
-              <div className="text-xs text-[#22c55e] flex items-center gap-1"><TrendingUp size={11} /> +42% this quarter</div>
-              <div className="mt-4 grid grid-cols-3 gap-1">
-                {[75,90,60,85,95,70].map((h,i) => <div key={i} className="rounded-sm" style={{ height:32,background:`rgba(255,200,69,${0.1+h/100*0.5})` }} />)}
-              </div>
-            </motion.div>
-            <motion.div initial={{ opacity:0,x:40 }} animate={{ opacity:1,x:0 }} transition={{ delay:0.6,duration:0.8,ease:[0.16,1,.3,1] }}
-              className="col-span-2 glass-md rounded-3xl bento-card border border-white/[0.07] overflow-hidden" style={{ height:240 }}>
-              <ProjectCarousel />
-            </motion.div>
-          </div>
-
-          {/* Commits */}
-          <motion.div initial={{ opacity:0,y:30 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.75,duration:0.8,ease:[0.16,1,.3,1] }}
-            className="lg:col-span-4 glass-md rounded-3xl p-5 bento-card border border-white/[0.07] relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-6 z-10 pointer-events-none" style={{ background:'linear-gradient(180deg,rgba(13,21,48,.95) 0%,transparent 100%)' }} />
-            <div className="absolute bottom-0 left-0 right-0 h-10 z-10 pointer-events-none" style={{ background:'linear-gradient(0deg,rgba(13,21,48,.95) 0%,transparent 100%)' }} />
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-400" style={{ animation:'pulse-glow 2s ease-in-out infinite' }} /><span className="text-xs font-semibold text-[#F0F4FF]">Live commits</span></div>
-              <span className="text-[10px] text-[#8892B0]">stack46/main</span>
-            </div>
-            <CommitsFeed />
-          </motion.div>
-
-          {/* Tech stack */}
-          <motion.div initial={{ opacity:0,y:30 }} animate={{ opacity:1,y:0 }} transition={{ delay:0.9,duration:0.8,ease:[0.16,1,.3,1] }}
-            className="lg:col-span-8 glass-md rounded-3xl p-6 bento-card border border-white/[0.07] relative overflow-hidden flex flex-col justify-between">
-            <div className="absolute inset-0 pointer-events-none" style={{ background:'radial-gradient(ellipse at 80% 50%,rgba(30,42,120,.35) 0%,transparent 60%)' }} />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4"><span className="text-xs font-semibold text-[#F0F4FF]">Technologies we master</span><span className="text-[10px] text-[#8892B0]">20+ stacks</span></div>
-              <div className="flex flex-wrap gap-2">
-                {MARQUEE_TECH.map((t, i) => (
-                  <motion.span key={t} initial={{ opacity:0,scale:0.8 }} animate={{ opacity:1,scale:1 }} transition={{ delay:1+i*0.035,duration:0.4 }}
-                    whileHover={{ scale:1.12,y:-3 }}
-                    className="px-3 py-1.5 rounded-full text-xs font-semibold cursor-default"
-                    style={{ background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.09)',color:'#8892B0',transition:'all .2s ease' }}>
-                    {t}
-                  </motion.span>
-                ))}
-              </div>
-            </div>
-            <div className="relative z-10 flex items-center justify-between pt-4 mt-2" style={{ borderTop:'1px solid rgba(255,255,255,.06)' }}>
-              <span className="text-xs text-[#8892B0]">From pixel to production — we own every layer.</span>
-              <Link href="/platform" className="text-xs font-semibold flex items-center gap-1 hover:gap-2 transition-all duration-200" style={{ color:'#2AACE2' }}>See platform <ArrowRight size={11} /></Link>
-            </div>
-          </motion.div>
-        </div>
-
-        <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:2 }} className="flex flex-col items-center gap-2 mt-10 mx-auto">
-          <span className="text-[10px] tracking-widest uppercase text-[#8892B0]">Scroll</span>
-          <motion.div animate={{ y:[0,7,0] }} transition={{ duration:1.6,repeat:Infinity,ease:'easeInOut' }} className="w-px h-8" style={{ background:'linear-gradient(180deg,rgba(42,172,226,.8),transparent)' }} />
-        </motion.div>
-      </section>
+      {/* ████████ HERO — Trionn-style, tubes cursor + intro node motif ████████ */}
+      <TrionnHero />
 
       {/* ████████ MARQUEE ████████ */}
       <div className="relative z-10 py-4 overflow-hidden" style={{ borderTop:'1px solid rgba(255,255,255,.06)',borderBottom:'1px solid rgba(255,255,255,.06)',background:'rgba(13,21,48,.6)',backdropFilter:'blur(8px)' }}>
