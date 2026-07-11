@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, useScroll, useTransform, useMotionValue } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
@@ -18,6 +18,8 @@ const PANELS = [
   { n: '04', title: 'MedTrack', tag: 'HealthTech · Compliance', result: 'HIPAA-compliant mobile platform shipped in ten weeks.', img: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&q=80', accent: '#a855f7' },
   { n: '05', title: 'CloudBase', tag: 'Enterprise · Platform', result: 'Legacy monolith to microservices with zero downtime.', img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900&q=80', accent: '#06b6d4' },
   { n: '06', title: 'EduSpark', tag: 'EdTech · Web Platform', result: '400k students onboarded in the first enrolment season.', img: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=900&q=80', accent: '#4DD0C4' },
+  { n: '07', title: 'PayNest', tag: 'FinTech · Payments', result: 'PCI-DSS payment rails processing £2M/day at 99.99% uptime.', img: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=900&q=80', accent: '#f97316' },
+  { n: '08', title: 'TerraGrid', tag: 'Energy · IoT', result: '12,000 smart meters streaming live telemetry, 40% grid savings.', img: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=900&q=80', accent: '#ec4899' },
 ]
 
 export default function HorizontalWork() {
@@ -25,6 +27,9 @@ export default function HorizontalWork() {
   const stripRef = useRef<HTMLDivElement>(null)
   /* MotionValue (not state) so the x-transform always reads the live width */
   const shiftMV = useMotionValue(0)
+  /* Pin length derived from the real strip width: 1px of horizontal travel
+     costs 1.6px of vertical scroll — slow, deliberate sweep on every device. */
+  const [trackH, setTrackH] = useState<string>('420vh')
 
   /* Measure the real strip width so the sweep ends EXACTLY when the last
      panel is fully in view — no dead scroll, no cut-off panels. */
@@ -32,7 +37,9 @@ export default function HorizontalWork() {
     const measure = () => {
       if (!stripRef.current) return
       const total = stripRef.current.scrollWidth
-      shiftMV.set(Math.max(total - window.innerWidth + 48, 0))
+      const shift = Math.max(total - window.innerWidth + 48, 0)
+      shiftMV.set(shift)
+      setTrackH(`${Math.round(window.innerHeight + shift * 1.6)}px`)
     }
     measure()
     const late = setTimeout(measure, 400) /* after fonts/images settle */
@@ -49,7 +56,7 @@ export default function HorizontalWork() {
   const progressScale = scrollYProgress
 
   return (
-    <section ref={trackRef} className="relative z-10" style={{ height: '260vh' }}>
+    <section ref={trackRef} className="relative z-10" style={{ height: trackH }}>
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
 
         {/* Header */}

@@ -37,8 +37,9 @@ export default function AnimatedText({ segments, delay = 0 }: {
   stagger?: number
 }) {
   const ref = useRef<HTMLSpanElement>(null)
-  /* Reveal happens while the heading travels from 95% to 55% of the viewport */
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.95', 'start 0.55'] })
+  /* Reveal happens while the heading travels from 95% to 40% of the viewport —
+     the longer window makes the word-by-word sweep feel slow and deliberate */
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.95', 'start 0.4'] })
 
   const words = segments.flatMap(seg =>
     seg.text.split(' ').map(word => ({ word, className: seg.className, style: seg.style }))

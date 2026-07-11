@@ -131,7 +131,9 @@ function TiltCard({ children, accent, className = '', style }: { children: React
    staggered per card by shifting the progress range — fully reversible */
 function ScrubReveal({ children, index = 0, className = '' }: { children: React.ReactNode; index?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 1.05', 'start 0.55'] })
+  /* Long scrub window: the reveal finishes only once the element has climbed
+     to 38% of the viewport — slow, fully scroll-owned entrance. */
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 1.05', 'start 0.38'] })
   const lag = Math.min(index * 0.07, 0.35)
   const y = useTransform(scrollYProgress, [lag, 1], [110, 0])
   const opacity = useTransform(scrollYProgress, [lag, 1], [0, 1])

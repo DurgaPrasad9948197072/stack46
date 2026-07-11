@@ -140,7 +140,8 @@ export default function TestimonialsStack() {
       </div>
 
       {/* Stacked deck */}
-      <ContainerScroll className="h-[300vh]">
+      {/* ~84vh of scroll per card — each one straightens and peels slowly */}
+      <ContainerScroll className="h-[420vh]">
         <div className="sticky left-0 top-0 h-svh w-full py-12 flex items-center justify-center">
           <CardsContainer className="mx-auto h-[430px] w-[340px] md:w-[400px]">
             {TESTIMONIALS.map((t, i) => (
