@@ -1,10 +1,11 @@
 'use client'
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion'
 
 /*
- * Trionn-style masked word reveal. Each word rises out of its own
- * overflow-hidden mask when the heading scrolls into view.
- * Segments allow mixed styling (e.g. gradient words) in one heading.
+ * True scroll-scrubbed masked word reveal.
+ * Word position is a pure function of scroll progress — scrolling down
+ * reveals, scrolling up plays the exact animation backwards. No timers.
  */
 export interface TextSegment {
   text: string
@@ -12,36 +13,54 @@ export interface TextSegment {
   style?: React.CSSProperties
 }
 
-export default function AnimatedText({ segments, delay = 0, stagger = 0.055 }: {
+function Word({ progress, range, className, style, children }: {
+  progress: MotionValue<number>
+  range: [number, number]
+  className?: string
+  style?: React.CSSProperties
+  children: React.ReactNode
+}) {
+  const y = useTransform(progress, range, ['118%', '0%'])
+  return (
+    <span className="inline-block overflow-hidden align-bottom"
+      style={{ padding: '0.12em 0.02em', margin: '-0.12em -0.02em' }}>
+      <motion.span className={`inline-block will-change-transform ${className ?? ''}`} style={{ y, ...style }}>
+        {children}
+      </motion.span>
+    </span>
+  )
+}
+
+export default function AnimatedText({ segments, delay = 0 }: {
   segments: TextSegment[]
   delay?: number
   stagger?: number
 }) {
-  let wordIdx = 0
+  const ref = useRef<HTMLSpanElement>(null)
+  /* Reveal happens while the heading travels from 95% to 55% of the viewport */
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.95', 'start 0.55'] })
+
+  const words = segments.flatMap(seg =>
+    seg.text.split(' ').map(word => ({ word, className: seg.className, style: seg.style }))
+  )
+  const n = Math.max(words.length, 1)
+  /* delay (formerly seconds) becomes a progress offset so multi-line staggering still works */
+  const offset = Math.min(delay * 0.9, 0.4)
+
   return (
-    <>
-      {segments.map((seg, si) =>
-        seg.text.split(' ').map((word, wi) => {
-          const d = delay + wordIdx++ * stagger
-          return (
-            <span key={`${si}-${wi}`}>
-              <span className="inline-block overflow-hidden align-bottom"
-                style={{ padding: '0.12em 0.02em', margin: '-0.12em -0.02em' }}>
-                <motion.span
-                  className={`inline-block will-change-transform ${seg.className ?? ''}`}
-                  style={seg.style}
-                  initial={{ y: '118%' }}
-                  whileInView={{ y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ duration: 0.8, delay: d, ease: [0.16, 1, 0.3, 1] }}>
-                  {word}
-                </motion.span>
-              </span>
-              {' '}
-            </span>
-          )
-        })
-      )}
-    </>
+    <span ref={ref}>
+      {words.map((w, i) => {
+        const start = Math.min(offset + (i / n) * 0.5, 0.55)
+        const end = Math.min(start + 0.45, 1)
+        return (
+          <span key={i}>
+            <Word progress={scrollYProgress} range={[start, end]} className={w.className} style={w.style}>
+              {w.word}
+            </Word>
+            {' '}
+          </span>
+        )
+      })}
+    </span>
   )
 }

@@ -58,10 +58,10 @@ const STEPS = [
 /* Animated count-up */
 function CountUp({ target, suffix = '' }: { target: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true })
+  const inView = useInView(ref, { once: false, amount: 0.6 })
   const [val, setVal] = useState(0)
   useEffect(() => {
-    if (!inView) return
+    if (!inView) { setVal(0); return }
     let cur = 0; const step = target / 45
     const t = setInterval(() => { cur = Math.min(cur + step, target); setVal(Math.round(cur)); if (cur >= target) clearInterval(t) }, 28)
     return () => clearInterval(t)
@@ -72,20 +72,20 @@ function CountUp({ target, suffix = '' }: { target: number; suffix?: string }) {
 /* SVG ring + count-up stat */
 function StatRing({ val, suffix, label, color, pct }: { val: number; suffix: string; label: string; color: string; pct: number }) {
   const ref = useRef<SVGCircleElement>(null)
-  const inView = useInView(ref, { once: true })
+  const inView = useInView(ref, { once: false, amount: 0.5 })
   const r = 44; const circ = 2 * Math.PI * r
   return (
     <motion.div className="flex flex-col items-center gap-4"
       initial={{ opacity: 0, scale: 0.7, y: 30 }} whileInView={{ opacity: 1, scale: 1, y: 0 }}
-      viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.16,1,.3,1] }}>
+      viewport={{ once: false, amount: 0.2 }} transition={{ duration: 0.7, ease: [0.16,1,.3,1] }}>
       <div className="relative w-28 h-28">
         <svg viewBox="0 0 100 100" className="w-full h-full" style={{ transform: 'rotate(-90deg)' }}>
           <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,.06)" strokeWidth="7" />
           <motion.circle ref={ref} cx="50" cy="50" r={r} fill="none" stroke={color} strokeWidth="7"
             strokeLinecap="round" strokeDasharray={circ}
             initial={{ strokeDashoffset: circ }}
-            animate={inView ? { strokeDashoffset: circ * (1 - pct) } : {}}
-            transition={{ duration: 2, ease: 'easeOut', delay: 0.4 }} />
+            animate={inView ? { strokeDashoffset: circ * (1 - pct) } : { strokeDashoffset: circ }}
+            transition={{ duration: inView ? 2 : 0.6, ease: 'easeOut', delay: inView ? 0.4 : 0 }} />
         </svg>
         {/* Glow */}
         <div className="absolute inset-0 rounded-full pointer-events-none"
@@ -231,7 +231,7 @@ export default function HomePage() {
       {/* ████████ SERVICES — 3D Tilt Cards ████████ */}
       <section id="services" className="relative z-10 py-32 px-6" style={{ perspective:1400 }}>
         <div className="max-w-7xl mx-auto">
-          <motion.div className="mb-20" initial={{ opacity:0,y:40 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.9,ease:[0.16,1,.3,1] }}>
+          <motion.div className="mb-20" initial={{ opacity:0,y:40 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.9,ease:[0.16,1,.3,1] }}>
             <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(42,172,226,.1)',border:'1px solid rgba(42,172,226,.25)',color:'#2AACE2' }}>What We Build</span>
             <h2 className="text-5xl md:text-6xl font-black leading-[0.97] max-w-3xl" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.035em' }}>
               <AnimatedText segments={[
@@ -245,7 +245,7 @@ export default function HomePage() {
             {FEATURES.map((f, i) => (
               <motion.div key={f.title}
                 initial={{ opacity:0,y:50,rotateX:-15 }} whileInView={{ opacity:1,y:0,rotateX:0 }}
-                viewport={{ once:true,margin:'-60px' }}
+                viewport={{ once: false, margin: '-60px' }}
                 transition={{ duration:0.8,delay:i*0.09,ease:[0.16,1,.3,1] }}
                 className={f.span===2 ? 'sm:col-span-2' : ''}>
                 <TiltCard accent={f.accent} className="h-full">
@@ -276,7 +276,7 @@ export default function HomePage() {
       {/* ████████ PORTFOLIO — Drag Gallery ████████ */}
       <section className="relative z-10 py-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 mb-12">
-          <motion.div className="flex items-end justify-between" initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8 }}>
+          <motion.div className="flex items-end justify-between" initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8 }}>
             <div>
               <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(77,208,196,.1)',border:'1px solid rgba(77,208,196,.25)',color:'#4DD0C4' }}>Portfolio</span>
               <h2 className="text-5xl md:text-6xl font-black leading-[0.97]" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.035em' }}>
@@ -292,7 +292,7 @@ export default function HomePage() {
           </motion.div>
         </div>
         {/* Drag hint */}
-        <motion.p className="text-center text-xs text-[#8892B0] mb-4" initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once:true }}>
+        <motion.p className="text-center text-xs text-[#8892B0] mb-4" initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once: false, amount: 0.2 }}>
           ← Drag to explore →
         </motion.p>
         <DragGallery />
@@ -306,7 +306,7 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto">
           <motion.h2 className="text-center text-4xl md:text-5xl font-black mb-16 leading-[1.06]"
             style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}
-            initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8 }}>
+            initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8 }}>
             <AnimatedText segments={[
               { text: 'Our track record' },
               { text: 'speaks.', style: { background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } },
@@ -326,7 +326,7 @@ export default function HomePage() {
       {/* ████████ PROCESS — Animated Timeline ████████ */}
       <section className="relative z-10 py-28 px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div className="text-center mb-20" initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8 }}>
+          <motion.div className="text-center mb-20" initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8 }}>
             <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(255,200,69,.1)',border:'1px solid rgba(255,200,69,.25)',color:'#FFC845' }}>Our Process</span>
             <h2 className="text-4xl md:text-5xl font-black leading-[1.06]" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}>
               <AnimatedText segments={[{ text: 'How we operate' }]} />
@@ -339,14 +339,14 @@ export default function HomePage() {
             <motion.div className="absolute top-0 left-0 h-full"
               style={{ background:'linear-gradient(90deg,#2AACE2,#4DD0C4,#FFC845)',originX:0 }}
               initial={{ scaleX:0 }} whileInView={{ scaleX:1 }}
-              viewport={{ once:true }} transition={{ duration:2,ease:[0.25,1,.5,1],delay:0.4 }} />
+              viewport={{ once: false, amount: 0.2 }} transition={{ duration:2,ease:[0.25,1,.5,1],delay:0.4 }} />
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {STEPS.map((s, i) => (
               <motion.div key={s.n}
                 initial={{ opacity:0,y:50 }} whileInView={{ opacity:1,y:0 }}
-                viewport={{ once:true,margin:'-40px' }} transition={{ duration:0.8,delay:i*0.15,ease:[0.16,1,.3,1] }}
+                viewport={{ once: false, margin: '-40px' }} transition={{ duration:0.8,delay:i*0.15,ease:[0.16,1,.3,1] }}
                 whileHover={{ y:-10 }} style={{ perspective:600 }}>
                 {/* Number circle with pulse */}
                 <div className="flex flex-col items-center lg:items-start">
@@ -354,7 +354,7 @@ export default function HomePage() {
                     <motion.div className="w-14 h-14 rounded-full flex items-center justify-center font-black text-lg relative z-10"
                       style={{ fontFamily:'var(--font-grotesk)',background:`${s.color}18`,border:`2px solid ${s.color}50`,color:s.color }}
                       initial={{ scale:0.4,rotate:-15 }} whileInView={{ scale:1,rotate:0 }}
-                      viewport={{ once:true }} transition={{ duration:0.6,delay:i*0.15+0.4,type:'spring',stiffness:200 }}>
+                      viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.6,delay:i*0.15+0.4,type:'spring',stiffness:200 }}>
                       {s.n}
                     </motion.div>
                     <motion.div className="absolute inset-0 rounded-full"
@@ -381,14 +381,14 @@ export default function HomePage() {
       <section className="relative z-10 py-16 px-6 pb-32">
         <div className="max-w-5xl mx-auto">
           <motion.div className="glass-md rounded-3xl p-14 text-center relative overflow-hidden"
-            initial={{ opacity:0,y:40 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.9,ease:[0.16,1,.3,1] }}>
+            initial={{ opacity:0,y:40 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.9,ease:[0.16,1,.3,1] }}>
             <FloatingDots />
             {/* Radial glows */}
             <div style={{ position:'absolute',top:-80,left:-80,width:320,height:320,background:'radial-gradient(circle,rgba(42,172,226,.22) 0%,transparent 70%)',pointerEvents:'none' }} />
             <div style={{ position:'absolute',bottom:-80,right:-80,width:280,height:280,background:'radial-gradient(circle,rgba(168,85,247,.18) 0%,transparent 70%)',pointerEvents:'none' }} />
 
             <div className="relative z-10">
-              <motion.div initial={{ scale:0.5,opacity:0 }} whileInView={{ scale:1,opacity:1 }} viewport={{ once:true }} transition={{ duration:0.5,type:'spring',stiffness:200 }}
+              <motion.div initial={{ scale:0.5,opacity:0 }} whileInView={{ scale:1,opacity:1 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.5,type:'spring',stiffness:200 }}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-8"
                 style={{ background:'rgba(42,172,226,.12)',border:'1px solid rgba(42,172,226,.3)',color:'#2AACE2' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-green-400" style={{ animation:'pulse-glow 2s ease-in-out infinite' }} />
@@ -397,18 +397,18 @@ export default function HomePage() {
 
               <motion.h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-5 leading-[1.06]"
                 style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}
-                initial={{ opacity:0,y:30 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8,delay:0.1 }}>
+                initial={{ opacity:0,y:30 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8,delay:0.1 }}>
                 Ready to build something{' '}
                 <span className="grad-anim">extraordinary?</span>
               </motion.h2>
 
               <motion.p className="text-[#8892B0] text-lg mb-10 max-w-xl mx-auto"
-                initial={{ opacity:0,y:20 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8,delay:0.2 }}>
+                initial={{ opacity:0,y:20 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8,delay:0.2 }}>
                 Proposal in 48 hours. No commitment. Just a conversation about your product.
               </motion.p>
 
               <motion.div className="flex flex-col sm:flex-row gap-4 justify-center"
-                initial={{ opacity:0,y:20 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8,delay:0.3 }}>
+                initial={{ opacity:0,y:20 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8,delay:0.3 }}>
                 <motion.div whileHover={{ scale:1.05,y:-3 }} whileTap={{ scale:0.96 }}>
                   <Link href="/contact" className="inline-flex items-center justify-center gap-2 px-9 py-4 rounded-full text-sm font-bold relative overflow-hidden"
                     style={{ background:'linear-gradient(135deg,#1E2A78,#2AACE2)',color:'#fff',boxShadow:'0 0 48px rgba(42,172,226,.45),inset 0 1px 0 rgba(255,255,255,.15)' }}>

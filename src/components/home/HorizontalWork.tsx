@@ -2,7 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 
 /*
@@ -23,10 +23,9 @@ const PANELS = [
 export default function HorizontalWork() {
   const trackRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] })
-  const smooth = useSpring(scrollYProgress, { stiffness: 90, damping: 26, restDelta: 0.001 })
-  /* 6 panels ≈ 480vw of strip; sweep it left while pinned */
-  const x = useTransform(smooth, [0, 1], ['0%', '-78%'])
-  const progressScale = useTransform(smooth, [0, 1], [0, 1])
+  /* No spring — strip position is 1:1 with the scrollbar, reverses with it */
+  const x = useTransform(scrollYProgress, [0, 1], ['0%', '-78%'])
+  const progressScale = scrollYProgress
 
   return (
     <section ref={trackRef} className="relative z-10" style={{ height: '340vh' }}>

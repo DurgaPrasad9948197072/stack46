@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useMemo, useRef } from 'react'
-import { motion, useTransform, useSpring, useMotionValue, useScroll, useInView } from 'framer-motion'
+import { motion, useTransform, useSpring, useMotionValue, useScroll } from 'framer-motion'
 
 /*
  * STACK46 scroll-morph gallery.
@@ -45,7 +45,7 @@ function FlipCard({ src, index, target }: { src: string; index: number; target: 
   return (
     <motion.div
       animate={{ x: target.x, y: target.y, rotate: target.rotation, scale: target.scale, opacity: target.opacity }}
-      transition={{ type: 'spring', stiffness: 40, damping: 15 }}
+      transition={{ type: 'spring', stiffness: 120, damping: 22 }}
       style={{ position: 'absolute', width: IMG_WIDTH, height: IMG_HEIGHT, transformStyle: 'preserve-3d', perspective: '1000px' }}
       className="cursor-pointer group">
       <motion.div
@@ -75,7 +75,6 @@ function FlipCard({ src, index, target }: { src: string; index: number; target: 
 export default function ScrollMorphSection() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(sectionRef, { once: true, margin: '-20%' })
 
   const [introPhase, setIntroPhase] = useState<AnimationPhase>('scatter')
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
@@ -94,20 +93,22 @@ export default function ScrollMorphSection() {
     return () => observer.disconnect()
   }, [])
 
-  /* Intro sequence fires when the section scrolls into view */
-  useEffect(() => {
-    if (!inView) return
-    const t1 = setTimeout(() => setIntroPhase('line'), 400)
-    const t2 = setTimeout(() => setIntroPhase('circle'), 1900)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [inView])
+  /* Real page-scroll drives EVERYTHING — phases included — so scrolling up
+     plays the whole sequence backwards. Track starts before the pin so the
+     scatter→line→circle intro is scrubbed while the section approaches. */
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end end'] })
 
-  /* Real page-scroll drives the morph (replaces virtual wheel hijack) */
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] })
-  const morphProgress = useTransform(scrollYProgress, [0.06, 0.42], [0, 1])
-  const smoothMorph = useSpring(morphProgress, { stiffness: 40, damping: 20 })
-  const sweepProgress = useTransform(scrollYProgress, [0.45, 0.96], [0, 1])
-  const smoothSweep = useSpring(sweepProgress, { stiffness: 40, damping: 20 })
+  /* Phase thresholds on raw progress (reversible by construction) */
+  useEffect(() => {
+    const unsub = scrollYProgress.on('change', v => {
+      setIntroPhase(v < 0.12 ? 'scatter' : v < 0.24 ? 'line' : 'circle')
+    })
+    return unsub
+  }, [scrollYProgress])
+
+  /* No springs on the scrub paths — 1:1 with the scrollbar */
+  const morphProgress = useTransform(scrollYProgress, [0.32, 0.55], [0, 1])
+  const sweepProgress = useTransform(scrollYProgress, [0.58, 0.97], [0, 1])
 
   /* Mouse parallax on the arc */
   const mouseX = useMotionValue(0)
@@ -139,15 +140,15 @@ export default function ScrollMorphSection() {
   const [sweepValue, setSweepValue] = useState(0)
   const [parallaxValue, setParallaxValue] = useState(0)
   useEffect(() => {
-    const u1 = smoothMorph.on('change', setMorphValue)
-    const u2 = smoothSweep.on('change', setSweepValue)
+    const u1 = morphProgress.on('change', setMorphValue)
+    const u2 = sweepProgress.on('change', setSweepValue)
     const u3 = smoothMouseX.on('change', setParallaxValue)
     return () => { u1(); u2(); u3() }
-  }, [smoothMorph, smoothSweep, smoothMouseX])
+  }, [morphProgress, sweepProgress, smoothMouseX])
 
   /* Arc-state content */
-  const contentOpacity = useTransform(smoothMorph, [0.8, 1], [0, 1])
-  const contentY = useTransform(smoothMorph, [0.8, 1], [20, 0])
+  const contentOpacity = useTransform(morphProgress, [0.8, 1], [0, 1])
+  const contentY = useTransform(morphProgress, [0.8, 1], [20, 0])
 
   return (
     /* Tall track: the sticky stage pins while scroll drives the morph */
