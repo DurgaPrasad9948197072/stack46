@@ -7,10 +7,13 @@ import {
 } from 'framer-motion'
 import { useReveal } from '@/hooks/useReveal'
 import TrionnHero from '@/components/home/TrionnHero'
+import HorizontalWork from '@/components/home/HorizontalWork'
+import ScrollMorphSection from '@/components/ui/scroll-morph-hero'
+import TestimonialsStack from '@/components/ui/animated-cards-stack'
 import AnimatedText from '@/components/ui/AnimatedText'
 import {
   Code2, Cloud, Sparkles, Smartphone, Plug, ShieldCheck,
-  Star, ArrowUpRight,
+  ArrowUpRight,
 } from 'lucide-react'
 
 /* ══════════════════ DATA ══════════════════ */
@@ -49,19 +52,6 @@ const STEPS = [
   { n: '03', title: 'Build & Deploy',       desc: '2-week sprints, daily standups, automated CI/CD — shipped fast without shortcuts.', color: '#06b6d4' },
   { n: '04', title: 'Scale & Support',      desc: 'Engineering retainers, SLA monitoring and long-term roadmap ownership.', color: '#22c55e' },
 ]
-
-const ALL_TESTIMONIALS = [
-  { name: 'Sarah Mitchell',  role: 'CTO, LogiFlow',           quote: "STACK46 delivered our platform 2 weeks early and 25% under budget. Best engineering team I have worked with, full stop.", stars: 5, initials: 'SM' },
-  { name: 'James Okonkwo',   role: 'Founder, NexusAI',        quote: "Their AI pipeline tripled our data throughput overnight. They treated our product like it was their own company — obsessive.", stars: 5, initials: 'JO' },
-  { name: 'Priya Anand',     role: 'CPO, RetailHub',          quote: "4.9 stars on the App Store in month three of launch. STACK46's design and engineering is genuinely in a different league.", stars: 5, initials: 'PA' },
-  { name: 'David Chen',      role: 'CEO, DataSync',           quote: "They rebuilt our entire data platform in 6 weeks and didn't break a single production query. Incredible technical discipline.", stars: 5, initials: 'DC' },
-  { name: 'Emma Thompson',   role: 'VP Engineering, CloudBase',quote: "Every engineer they placed was senior-level in practice, not just on paper. Code quality is outstanding — we kept two of them full-time.", stars: 5, initials: 'ET' },
-  { name: 'Alex Rodriguez',  role: 'CTO, FinCore',            quote: "SOC 2 compliant, zero critical security findings post-audit. Rare to find an agency that treats security as seriously as we do.", stars: 5, initials: 'AR' },
-  { name: 'Mei Lin',         role: 'Product Lead, ShopFlow',  quote: "Conversion rate up 34% post-launch. The UX thinking they brought to our checkout flow was beyond what we could have done internally.", stars: 5, initials: 'ML' },
-  { name: 'Omar Hassan',     role: 'Founder, MedTrack',       quote: "HIPAA-compliant mobile app shipped in 10 weeks. They navigated the compliance complexity without slowing down development.", stars: 5, initials: 'OH' },
-]
-const TEST_ROW1 = ALL_TESTIMONIALS.slice(0, 4)
-const TEST_ROW2 = ALL_TESTIMONIALS.slice(4)
 
 /* ══════════════════ SUB-COMPONENTS ══════════════════ */
 
@@ -166,30 +156,6 @@ function DragGallery() {
           </motion.div>
         ))}
       </motion.div>
-    </div>
-  )
-}
-
-/* Testimonial card */
-function TestCard({ t }: { t: typeof ALL_TESTIMONIALS[0] }) {
-  return (
-    <div className="flex-shrink-0 glass-md rounded-2xl p-6 mx-3 border border-white/[0.07] overflow-hidden"
-      style={{ width: 320, whiteSpace: 'normal', wordBreak: 'break-word' }}>
-      <div className="flex gap-1 mb-3">
-        {[...Array(t.stars)].map((_, i) => <Star key={i} size={12} fill="#FFC845" style={{ color: '#FFC845' }} />)}
-      </div>
-      <p className="text-sm text-[#8892B0] leading-relaxed mb-5 italic"
-        style={{ display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-        &ldquo;{t.quote}&rdquo;
-      </p>
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0"
-          style={{ background: 'rgba(42,172,226,.18)', color: '#2AACE2' }}>{t.initials}</div>
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-[#F0F4FF] truncate">{t.name}</p>
-          <p className="text-[10px] text-[#8892B0] truncate">{t.role}</p>
-        </div>
-      </div>
     </div>
   )
 }
@@ -304,6 +270,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ████████ CASE STUDIES — Pinned Horizontal Journey ████████ */}
+      <HorizontalWork />
+
       {/* ████████ PORTFOLIO — Drag Gallery ████████ */}
       <section className="relative z-10 py-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 mb-12">
@@ -328,6 +297,9 @@ export default function HomePage() {
         </motion.p>
         <DragGallery />
       </section>
+
+      {/* ████████ WORK IN MOTION — Sticky Scroll Morph (scatter→line→circle→arc) ████████ */}
+      <ScrollMorphSection />
 
       {/* ████████ STATS — SVG Rings ████████ */}
       <section className="relative z-10 py-28 px-6">
@@ -399,38 +371,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ████████ TESTIMONIALS — Dual Infinite Marquee ████████ */}
-      <section className="relative z-10 py-24 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 mb-12">
-          <motion.div className="text-center" initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8 }}>
-            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(255,200,69,.1)',border:'1px solid rgba(255,200,69,.25)',color:'#FFC845' }}>Testimonials</span>
-            <h2 className="text-4xl md:text-5xl font-black leading-[1.06]" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}>
-              <AnimatedText segments={[
-                { text: '150+ companies' },
-                { text: 'trust us.', style: { background: 'linear-gradient(135deg,#FFC845,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } },
-              ]} />
-            </h2>
-          </motion.div>
-        </div>
-
-        {/* Row 1 — left */}
-        <div className="relative mb-5 overflow-hidden">
-          <div style={{ position:'absolute',left:0,top:0,bottom:0,width:120,background:'linear-gradient(90deg,#070B1A,transparent)',zIndex:10,pointerEvents:'none' }} />
-          <div style={{ position:'absolute',right:0,top:0,bottom:0,width:120,background:'linear-gradient(270deg,#070B1A,transparent)',zIndex:10,pointerEvents:'none' }} />
-          <div className="marquee-inner flex whitespace-nowrap">
-            {[...TEST_ROW1,...TEST_ROW1,...TEST_ROW1,...TEST_ROW1].map((t,i) => <TestCard key={i} t={t} />)}
-          </div>
-        </div>
-
-        {/* Row 2 — right */}
-        <div className="relative overflow-hidden">
-          <div style={{ position:'absolute',left:0,top:0,bottom:0,width:120,background:'linear-gradient(90deg,#070B1A,transparent)',zIndex:10,pointerEvents:'none' }} />
-          <div style={{ position:'absolute',right:0,top:0,bottom:0,width:120,background:'linear-gradient(270deg,#070B1A,transparent)',zIndex:10,pointerEvents:'none' }} />
-          <div className="marquee-rev flex whitespace-nowrap">
-            {[...TEST_ROW2,...TEST_ROW2,...TEST_ROW2,...TEST_ROW2].map((t,i) => <TestCard key={i} t={t} />)}
-          </div>
-        </div>
-      </section>
+      {/* ████████ TESTIMONIALS — Scroll-Stacked Deck ████████ */}
+      <TestimonialsStack />
 
       {/* ████████ GIANT OUTLINE STRIP — scroll-driven, Trionn signature ████████ */}
       <ScrollStrip />
