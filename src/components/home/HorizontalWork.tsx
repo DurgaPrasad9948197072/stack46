@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, useMotionValue } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 
 /*
@@ -23,7 +23,8 @@ const PANELS = [
 export default function HorizontalWork() {
   const trackRef = useRef<HTMLDivElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
-  const [maxShift, setMaxShift] = useState(0)
+  /* MotionValue (not state) so the x-transform always reads the live width */
+  const shiftMV = useMotionValue(0)
 
   /* Measure the real strip width so the sweep ends EXACTLY when the last
      panel is fully in view — no dead scroll, no cut-off panels. */
@@ -31,21 +32,24 @@ export default function HorizontalWork() {
     const measure = () => {
       if (!stripRef.current) return
       const total = stripRef.current.scrollWidth
-      const shift = total - window.innerWidth + 48 /* right-edge breathing room */
-      setMaxShift(Math.max(shift, 0))
+      shiftMV.set(Math.max(total - window.innerWidth + 48, 0))
     }
     measure()
+    const late = setTimeout(measure, 400) /* after fonts/images settle */
     window.addEventListener('resize', measure)
-    return () => window.removeEventListener('resize', measure)
-  }, [])
+    const ro = new ResizeObserver(measure)
+    if (stripRef.current) ro.observe(stripRef.current)
+    return () => { clearTimeout(late); window.removeEventListener('resize', measure); ro.disconnect() }
+  }, [shiftMV])
 
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] })
-  /* 1:1 with the scrollbar, pixel-exact, reverses with it */
-  const x = useTransform(scrollYProgress, v => -v * maxShift)
+  /* Pixel-exact: progress 1 ⇒ last card flush at right edge ⇒ section unpins.
+     Combined transform stays live even when the measured width updates. */
+  const x = useTransform([scrollYProgress, shiftMV], (latest: number[]) => -latest[0] * latest[1])
   const progressScale = scrollYProgress
 
   return (
-    <section ref={trackRef} className="relative z-10" style={{ height: '300vh' }}>
+    <section ref={trackRef} className="relative z-10" style={{ height: '260vh' }}>
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
 
         {/* Header */}
