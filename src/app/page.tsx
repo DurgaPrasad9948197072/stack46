@@ -2,11 +2,12 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
-  motion, useInView, useTransform,
+  motion, useInView, useTransform, useScroll,
   useMotionValue, useSpring, useMotionTemplate,
 } from 'framer-motion'
 import { useReveal } from '@/hooks/useReveal'
 import TrionnHero from '@/components/home/TrionnHero'
+import AnimatedText from '@/components/ui/AnimatedText'
 import {
   Code2, Cloud, Sparkles, Smartphone, Plug, ShieldCheck,
   Star, ArrowUpRight,
@@ -211,6 +212,32 @@ function FloatingDots() {
   )
 }
 
+/* Giant outline word strip — position is driven by scroll, not a timer (Trionn-style) */
+function ScrollStrip() {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const x = useTransform(scrollYProgress, [0, 1], ['6%', '-38%'])
+  return (
+    <div ref={ref} className="relative z-10 py-12 overflow-hidden pointer-events-none" aria-hidden="true">
+      <motion.div style={{ x }} className="flex whitespace-nowrap items-center will-change-transform">
+        {[0, 1].map(half => (
+          <span key={half} className="flex items-center flex-shrink-0">
+            {['STACK46', 'DESIGN', 'DEVELOP', 'DEPLOY'].map(word => (
+              <span key={word} className="flex items-center">
+                <span className="text-outline-faint font-black uppercase leading-none mx-8"
+                  style={{ fontSize: 'clamp(4rem,11vw,10rem)', fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.02em' }}>
+                  {word}
+                </span>
+                <span className="grad-anim font-black leading-none" style={{ fontSize: 'clamp(2rem,5vw,4rem)' }}>✦</span>
+              </span>
+            ))}
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  )
+}
+
 /* ══════════════════ HOME PAGE ══════════════════ */
 export default function HomePage() {
   useReveal()
@@ -241,10 +268,10 @@ export default function HomePage() {
           <motion.div className="mb-20" initial={{ opacity:0,y:40 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.9,ease:[0.16,1,.3,1] }}>
             <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(42,172,226,.1)',border:'1px solid rgba(42,172,226,.25)',color:'#2AACE2' }}>What We Build</span>
             <h2 className="text-5xl md:text-6xl font-black leading-[0.97] max-w-3xl" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.035em' }}>
-              One agency.{' '}
-              <span style={{ background:'linear-gradient(135deg,#2AACE2,#4DD0C4,#FFC845)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text' }}>
-                Zero gaps.
-              </span>
+              <AnimatedText segments={[
+                { text: 'One agency.' },
+                { text: 'Zero gaps.', className: 'grad-anim' },
+              ]} />
             </h2>
           </motion.div>
 
@@ -284,8 +311,10 @@ export default function HomePage() {
             <div>
               <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(77,208,196,.1)',border:'1px solid rgba(77,208,196,.25)',color:'#4DD0C4' }}>Portfolio</span>
               <h2 className="text-5xl md:text-6xl font-black leading-[0.97]" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.035em' }}>
-                <span style={{ background:'linear-gradient(135deg,#06b6d4,#2AACE2)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text' }}>Any project.</span>{' '}
-                Any scale.
+                <AnimatedText segments={[
+                  { text: 'Any project.', style: { background: 'linear-gradient(135deg,#06b6d4,#2AACE2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } },
+                  { text: 'Any scale.' },
+                ]} />
               </h2>
             </div>
             <Link href="/fleet" className="hidden md:flex items-center gap-2 text-sm font-semibold mb-2" style={{ color:'#2AACE2' }}>
@@ -306,7 +335,10 @@ export default function HomePage() {
           <motion.h2 className="text-center text-4xl md:text-5xl font-black mb-16 leading-[1.06]"
             style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}
             initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8 }}>
-            Our track record <span style={{ background:'linear-gradient(135deg,#2AACE2,#FFC845)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text' }}>speaks.</span>
+            <AnimatedText segments={[
+              { text: 'Our track record' },
+              { text: 'speaks.', style: { background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } },
+            ]} />
           </motion.h2>
           {/* Spinning border container */}
           <div className="grad-border-wrap">
@@ -324,7 +356,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <motion.div className="text-center mb-20" initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8 }}>
             <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(255,200,69,.1)',border:'1px solid rgba(255,200,69,.25)',color:'#FFC845' }}>Our Process</span>
-            <h2 className="text-4xl md:text-5xl font-black leading-[1.06]" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}>How we operate</h2>
+            <h2 className="text-4xl md:text-5xl font-black leading-[1.06]" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}>
+              <AnimatedText segments={[{ text: 'How we operate' }]} />
+            </h2>
           </motion.div>
 
           {/* Connector line */}
@@ -371,8 +405,10 @@ export default function HomePage() {
           <motion.div className="text-center" initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once:true }} transition={{ duration:0.8 }}>
             <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(255,200,69,.1)',border:'1px solid rgba(255,200,69,.25)',color:'#FFC845' }}>Testimonials</span>
             <h2 className="text-4xl md:text-5xl font-black leading-[1.06]" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}>
-              150+ companies{' '}
-              <span style={{ background:'linear-gradient(135deg,#FFC845,#f97316)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text' }}>trust us.</span>
+              <AnimatedText segments={[
+                { text: '150+ companies' },
+                { text: 'trust us.', style: { background: 'linear-gradient(135deg,#FFC845,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } },
+              ]} />
             </h2>
           </motion.div>
         </div>
@@ -395,6 +431,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ████████ GIANT OUTLINE STRIP — scroll-driven, Trionn signature ████████ */}
+      <ScrollStrip />
 
       {/* ████████ CTA — Floating Particles + Split Text ████████ */}
       <section className="relative z-10 py-16 px-6 pb-32">

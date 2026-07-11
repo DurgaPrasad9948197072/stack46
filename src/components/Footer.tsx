@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { ArrowUpRight } from 'lucide-react'
 
 const LINKS = {
   Company: [
@@ -33,6 +34,21 @@ export default function Footer() {
   return (
     <footer className="relative z-10 pt-20 pb-8 px-6" style={{ background: 'linear-gradient(to top,rgba(5,8,20,1) 0%,rgba(7,11,26,.98) 100%)', borderTop: '1px solid rgba(255,255,255,.06)' }}>
       <div className="max-w-7xl mx-auto">
+        {/* ── Trionn-style giant CTA ── */}
+        <Link href="/contact" className="group block mb-20 pb-16" style={{ borderBottom: '1px solid rgba(255,255,255,.06)' }}>
+          <p className="text-xs font-semibold tracking-[0.3em] uppercase text-[#8892B0] mb-5">Have an idea?</p>
+          <div className="flex items-center justify-between gap-6 flex-wrap">
+            <span className="text-outline font-black uppercase leading-[0.9] transition-all duration-300"
+              style={{ fontSize: 'clamp(3rem,9.5vw,8.5rem)', fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.02em' }}>
+              Let&rsquo;s Talk
+            </span>
+            <span className="w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-45"
+              style={{ border: '1px solid rgba(42,172,226,.4)', background: 'rgba(42,172,226,.06)' }}>
+              <ArrowUpRight className="w-6 h-6 md:w-9 md:h-9 transition-colors duration-300" style={{ color: '#2AACE2' }} />
+            </span>
+          </div>
+        </Link>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div>

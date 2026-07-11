@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useReveal } from '@/hooks/useReveal'
+import AnimatedText from '@/components/ui/AnimatedText'
 import { MapPin } from 'lucide-react'
 
 const PERKS = [
@@ -100,10 +101,8 @@ export default function CareersPage() {
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5"
             style={{ background: 'rgba(168,85,247,.1)', border: '1px solid rgba(168,85,247,.25)', color: '#a855f7' }}>Careers</span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-5 leading-[1.06]" style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.02em' }}>
-            Help us build the<br />
-            <span style={{ background: 'linear-gradient(135deg,#2AACE2,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              future of software.
-            </span>
+            <span className="block"><AnimatedText segments={[{ text: 'Help us build the' }]} /></span>
+            <span className="block"><AnimatedText delay={0.24} segments={[{ text: 'future of software.', style: { background: 'linear-gradient(135deg,#2AACE2,#a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } }]} /></span>
           </h1>
           <p className="text-[#8892B0] text-lg mb-3 max-w-xl mx-auto">40+ team members across London and remote. We ship real products for real clients — fast.</p>
           <p className="text-sm text-[#8892B0]">London HQ · Remote-friendly · Competitive pay + equity</p>

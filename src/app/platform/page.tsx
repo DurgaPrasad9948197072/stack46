@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useReveal } from '@/hooks/useReveal'
+import AnimatedText from '@/components/ui/AnimatedText'
 import { Zap, Brain, LayoutDashboard, Globe, ShieldCheck, Database, CheckCircle2 } from 'lucide-react'
 
 const CAPABILITIES = [
@@ -34,10 +35,8 @@ export default function PlatformPage() {
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-6"
             style={{ background: 'rgba(42,172,226,.1)', border: '1px solid rgba(42,172,226,.25)', color: '#2AACE2' }}>Our Platform</span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.06]" style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.02em' }}>
-            Built for enterprise scale.<br />
-            <span style={{ background: 'linear-gradient(135deg,#2AACE2,#4DD0C4,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Designed for developers.
-            </span>
+            <span className="block"><AnimatedText segments={[{ text: 'Built for enterprise scale.' }]} /></span>
+            <span className="block"><AnimatedText delay={0.28} segments={[{ text: 'Designed for developers.', className: 'grad-anim' }]} /></span>
           </h1>
           <p className="text-[#8892B0] text-xl leading-relaxed mb-10 max-w-2xl mx-auto">
             A battle-tested platform foundation underneath every product we build — real-time, AI-ready and secure by default.

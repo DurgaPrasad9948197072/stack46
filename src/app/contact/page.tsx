@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useReveal } from '@/hooks/useReveal'
+import AnimatedText from '@/components/ui/AnimatedText'
 import Link from 'next/link'
 import { CheckCircle2, Send } from 'lucide-react'
 
@@ -29,10 +30,8 @@ export default function ContactPage() {
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5"
             style={{ background: 'rgba(42,172,226,.1)', border: '1px solid rgba(42,172,226,.25)', color: '#2AACE2' }}>Contact</span>
           <h1 className="text-4xl md:text-5xl font-black mb-5 leading-[1.06]" style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.02em' }}>
-            {"Let's get your project"}<br />
-            <span style={{ background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              moving.
-            </span>
+            <span className="block"><AnimatedText segments={[{ text: "Let's get your project" }]} /></span>
+            <span className="block"><AnimatedText delay={0.24} segments={[{ text: 'moving.', style: { background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } }]} /></span>
           </h1>
           <p className="text-[#8892B0] text-lg">Tell us about your project — we will have a proposal to you within 48 hours.</p>
         </div>

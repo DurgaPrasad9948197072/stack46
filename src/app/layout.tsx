@@ -4,6 +4,9 @@ import './globals.css'
 import AuroraBackground from '@/components/AuroraBackground'
 import IntroWrapper from '@/components/IntroWrapper'
 import ConditionalLayout from '@/components/ConditionalLayout'
+import SmoothScroll from '@/components/SmoothScroll'
+import CustomCursor from '@/components/CustomCursor'
+import ScrollProgress from '@/components/ScrollProgress'
 
 const grotesk = Space_Grotesk({
   subsets: ['latin'], variable: '--font-grotesk', display: 'swap',
@@ -48,6 +51,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body suppressHydrationWarning>
         <IntroWrapper />
+        <SmoothScroll />
+        <CustomCursor />
+        <ScrollProgress />
         <AuroraBackground />
         <ConditionalLayout>
           {children}

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Clock, ChevronRight } from 'lucide-react'
+import AnimatedText from '@/components/ui/AnimatedText'
 
 const CATEGORIES = ['All', 'Engineering', 'AI/ML', 'Design', 'Cloud', 'Security', 'Product']
 
@@ -70,10 +71,8 @@ export default function BlogPage() {
           <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5"
             style={{ background: 'rgba(255,200,69,.1)', border: '1px solid rgba(255,200,69,.25)', color: '#FFC845' }}>Blog</span>
           <h1 className="text-4xl md:text-5xl font-black mb-4 leading-[1.06]" style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.02em' }}>
-            <span style={{ background: 'linear-gradient(135deg,#FFC845,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Engineering intelligence,
-            </span><br />
-            straight from the source.
+            <span className="block"><AnimatedText segments={[{ text: 'Engineering intelligence,', style: { background: 'linear-gradient(135deg,#FFC845,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } }]} /></span>
+            <span className="block"><AnimatedText delay={0.24} segments={[{ text: 'straight from the source.' }]} /></span>
           </h1>
           <p className="text-[#8892B0] text-lg">Insights from the STACK46 team on engineering, AI, cloud and product design.</p>
         </div>
