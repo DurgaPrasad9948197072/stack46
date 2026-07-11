@@ -8,7 +8,6 @@ import {
 import { useReveal } from '@/hooks/useReveal'
 import TrionnHero from '@/components/home/TrionnHero'
 import HorizontalWork from '@/components/home/HorizontalWork'
-import ScrollMorphSection from '@/components/ui/scroll-morph-hero'
 import TestimonialsStack from '@/components/ui/animated-cards-stack'
 import AnimatedText from '@/components/ui/AnimatedText'
 import {
@@ -123,6 +122,24 @@ function TiltCard({ children, accent, className = '', style }: { children: React
       style={{ rotateX: rotX, rotateY: rotY, transformStyle: 'preserve-3d', ...style }}
       whileHover={{ scale: 1.025, z: 24 }} className={`group relative cursor-default ${className}`}>
       <motion.div className="absolute inset-0 rounded-2xl pointer-events-none z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: bg }} />
+      {children}
+    </motion.div>
+  )
+}
+
+/* Scroll-scrubbed reveal: position/rotation are a pure function of scroll,
+   staggered per card by shifting the progress range — fully reversible */
+function ScrubReveal({ children, index = 0, className = '' }: { children: React.ReactNode; index?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 1.05', 'start 0.55'] })
+  const lag = Math.min(index * 0.07, 0.35)
+  const y = useTransform(scrollYProgress, [lag, 1], [110, 0])
+  const opacity = useTransform(scrollYProgress, [lag, 1], [0, 1])
+  const rotateX = useTransform(scrollYProgress, [lag, 1], [-18, 0])
+  const scale = useTransform(scrollYProgress, [lag, 1], [0.9, 1])
+  return (
+    <motion.div ref={ref} className={className}
+      style={{ y, opacity, rotateX, scale, transformPerspective: 900, willChange: 'transform' }}>
       {children}
     </motion.div>
   )
@@ -243,10 +260,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
             {FEATURES.map((f, i) => (
-              <motion.div key={f.title}
-                initial={{ opacity:0,y:50,rotateX:-15 }} whileInView={{ opacity:1,y:0,rotateX:0 }}
-                viewport={{ once: false, margin: '-60px' }}
-                transition={{ duration:0.8,delay:i*0.09,ease:[0.16,1,.3,1] }}
+              <ScrubReveal key={f.title} index={i}
                 className={f.span===2 ? 'sm:col-span-2' : ''}>
                 <TiltCard accent={f.accent} className="h-full">
                   <div className="glass-md rounded-2xl p-6 border border-white/[0.07] h-full relative z-10 transition-border duration-300 group-hover:border-white/[0.14]">
@@ -264,7 +278,7 @@ export default function HomePage() {
                     </motion.div>
                   </div>
                 </TiltCard>
-              </motion.div>
+              </ScrubReveal>
             ))}
           </div>
         </div>
@@ -297,9 +311,6 @@ export default function HomePage() {
         </motion.p>
         <DragGallery />
       </section>
-
-      {/* ████████ WORK IN MOTION — Sticky Scroll Morph (scatter→line→circle→arc) ████████ */}
-      <ScrollMorphSection />
 
       {/* ████████ STATS — SVG Rings ████████ */}
       <section className="relative z-10 py-28 px-6">

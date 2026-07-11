@@ -27,7 +27,8 @@ function useContainerScrollContext() {
 
 export const ContainerScroll: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ children, style, className, ...props }) => {
   const scrollRef = React.useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: scrollRef, offset: ['start center', 'end end'] })
+  /* progress 0 exactly when the deck pins — cards respond from the first scroll tick */
+  const { scrollYProgress } = useScroll({ target: scrollRef, offset: ['start start', 'end end'] })
   return (
     <ContainerScrollContext.Provider value={{ scrollYProgress }}>
       <div ref={scrollRef} className={cn('relative w-full', className)} style={{ perspective: '1000px', ...style }} {...props}>
@@ -55,20 +56,24 @@ interface CardStickyProps extends HTMLMotionProps<'div'> {
 export const CardTransformed = React.forwardRef<HTMLDivElement, CardStickyProps>(
   function CardTransformed({ arrayLength, index, incrementY = 10, incrementZ = 10, incrementRotation, className, style, ...props }, ref) {
     const { scrollYProgress } = useContainerScrollContext()
-    const startRotation = incrementRotation ?? (-index + 90)
+    const startRotation = incrementRotation ?? (index % 2 === 0 ? 8 + index * 2 : -(8 + index * 2))
 
-    const start = index / (arrayLength + 1)
-    const end = (index + 1) / (arrayLength + 1)
-    const rotateRange: [number, number] = [start - 1.5, end / 1.5]
+    /* One card per equal scroll slice — strictly one-by-one, fully scrubbed:
+       first ~40% of the slice straightens the card into view, the rest
+       flies it up and away as the next card begins straightening. */
+    const slice = 1 / arrayLength
+    const start = index * slice
+    const straightenRange: [number, number] = [Math.max(start - slice * 0.5, 0), start + slice * 0.4]
+    const flyRange: [number, number] = [start + slice * 0.4, start + slice]
 
-    const y = useTransform(scrollYProgress, [start, end], ['0%', '-180%'])
-    const rotate = useTransform(scrollYProgress, rotateRange, [startRotation, 0])
+    const y = useTransform(scrollYProgress, flyRange, ['0%', '-190%'])
+    const rotate = useTransform(scrollYProgress, straightenRange, [startRotation, 0])
     const transform = useMotionTemplate`translateZ(${index * incrementZ}px) translateY(${y}) rotate(${rotate}deg)`
 
     /* shadow deepens as the card settles (hooks always called — no conditional) */
-    const dx = useTransform(scrollYProgress, rotateRange, [4, 0])
-    const dy = useTransform(scrollYProgress, rotateRange, [4, 12])
-    const blur = useTransform(scrollYProgress, rotateRange, [2, 24])
+    const dx = useTransform(scrollYProgress, straightenRange, [4, 0])
+    const dy = useTransform(scrollYProgress, straightenRange, [4, 12])
+    const blur = useTransform(scrollYProgress, straightenRange, [2, 24])
     const filter = useMotionTemplate`drop-shadow(${dx}px ${dy}px ${blur}px rgba(0,0,0,.45))`
 
     return (
@@ -142,7 +147,7 @@ export default function TestimonialsStack() {
               <CardTransformed
                 key={t.id}
                 arrayLength={TESTIMONIALS.length}
-                index={i + 2}
+                index={i}
                 role="article"
                 aria-labelledby={`card-${t.id}-title`}>
                 <div className="flex flex-col items-center space-y-4 text-center">

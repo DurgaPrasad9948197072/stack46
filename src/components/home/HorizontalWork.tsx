@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
@@ -22,13 +22,30 @@ const PANELS = [
 
 export default function HorizontalWork() {
   const trackRef = useRef<HTMLDivElement>(null)
+  const stripRef = useRef<HTMLDivElement>(null)
+  const [maxShift, setMaxShift] = useState(0)
+
+  /* Measure the real strip width so the sweep ends EXACTLY when the last
+     panel is fully in view — no dead scroll, no cut-off panels. */
+  useEffect(() => {
+    const measure = () => {
+      if (!stripRef.current) return
+      const total = stripRef.current.scrollWidth
+      const shift = total - window.innerWidth + 48 /* right-edge breathing room */
+      setMaxShift(Math.max(shift, 0))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] })
-  /* No spring — strip position is 1:1 with the scrollbar, reverses with it */
-  const x = useTransform(scrollYProgress, [0, 1], ['0%', '-78%'])
+  /* 1:1 with the scrollbar, pixel-exact, reverses with it */
+  const x = useTransform(scrollYProgress, v => -v * maxShift)
   const progressScale = scrollYProgress
 
   return (
-    <section ref={trackRef} className="relative z-10" style={{ height: '340vh' }}>
+    <section ref={trackRef} className="relative z-10" style={{ height: '300vh' }}>
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
 
         {/* Header */}
@@ -46,7 +63,7 @@ export default function HorizontalWork() {
         </div>
 
         {/* Horizontal strip */}
-        <motion.div style={{ x }} className="flex gap-6 pl-6 md:pl-[8vw] will-change-transform">
+        <motion.div ref={stripRef} style={{ x }} className="flex gap-6 pl-6 md:pl-[8vw] will-change-transform">
           {PANELS.map(p => (
             <div key={p.n}
               className="relative flex-shrink-0 rounded-3xl overflow-hidden group"
