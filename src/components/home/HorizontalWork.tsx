@@ -5,6 +5,7 @@ import Link from 'next/link'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowUpRight } from 'lucide-react'
+import { CASE_STUDIES } from '@/data/caseStudies'
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger)
@@ -19,16 +20,7 @@ if (typeof window !== 'undefined') {
  * no dead scroll before or after, on any screen size.
  */
 
-const PANELS = [
-  { n: '01', title: 'LogiFlow', tag: 'FinTech · Supply Chain', result: '25% operating cost cut across an 800-vehicle network.', img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=900&q=80', accent: '#2AACE2' },
-  { n: '02', title: 'NexusAI', tag: 'SaaS · AI Platform', result: '3× data throughput. 50TB migrated in one weekend, zero loss.', img: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=80', accent: '#FFC845' },
-  { n: '03', title: 'RetailHub', tag: 'E-Commerce · Mobile', result: '4.9★ App Store rating and 2M DAU within ninety days.', img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&q=80', accent: '#22c55e' },
-  { n: '04', title: 'MedTrack', tag: 'HealthTech · Compliance', result: 'HIPAA-compliant mobile platform shipped in ten weeks.', img: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&q=80', accent: '#a855f7' },
-  { n: '05', title: 'CloudBase', tag: 'Enterprise · Platform', result: 'Legacy monolith to microservices with zero downtime.', img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900&q=80', accent: '#06b6d4' },
-  { n: '06', title: 'EduSpark', tag: 'EdTech · Web Platform', result: '400k students onboarded in the first enrolment season.', img: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=900&q=80', accent: '#4DD0C4' },
-  { n: '07', title: 'PayNest', tag: 'FinTech · Payments', result: 'PCI-DSS payment rails processing £2M/day at 99.99% uptime.', img: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=900&q=80', accent: '#f97316' },
-  { n: '08', title: 'TerraGrid', tag: 'Energy · IoT', result: '12,000 smart meters streaming live telemetry, 40% grid savings.', img: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=900&q=80', accent: '#ec4899' },
-]
+const PANELS = CASE_STUDIES
 
 export default function HorizontalWork() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -81,7 +73,7 @@ export default function HorizontalWork() {
         </span>
         <h2 className="text-4xl md:text-6xl font-black leading-[0.97]" style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.035em' }}>
           The journey{' '}
-          <span style={{ background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <span className="accent-serif" style={{ background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             sideways.
           </span>
         </h2>
@@ -90,19 +82,13 @@ export default function HorizontalWork() {
       {/* Horizontal strip */}
       <div ref={stripRef} className="flex gap-6 pl-6 md:pl-[8vw] will-change-transform">
         {PANELS.map(p => (
-          <div key={p.n}
-            className="relative flex-shrink-0 rounded-3xl overflow-hidden group"
+          <Link key={p.n} href={`/work/${p.slug}`}
+            className="relative flex-shrink-0 rounded-3xl overflow-hidden group block"
             style={{ width: 'min(78vw, 640px)', height: 'min(54vh, 460px)', border: '1px solid rgba(255,255,255,.08)' }}>
             <img src={p.img} alt={p.title}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               draggable={false} loading="lazy" />
             <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(7,11,26,.95) 0%, rgba(7,11,26,.35) 55%, rgba(7,11,26,.1) 100%)' }} />
-
-            {/* Giant index */}
-            <div className="absolute top-6 right-8 font-black select-none leading-none"
-              style={{ fontSize: 'clamp(4rem,8vw,7rem)', color: p.accent, opacity: 0.2, fontFamily: 'var(--font-grotesk)' }}>
-              {p.n}
-            </div>
 
             {/* Copy */}
             <div className="absolute bottom-0 left-0 right-0 p-7">
@@ -113,7 +99,16 @@ export default function HorizontalWork() {
               <h3 className="font-black text-2xl md:text-3xl text-[#F0F4FF] mb-2" style={{ fontFamily: 'var(--font-grotesk)' }}>{p.title}</h3>
               <p className="text-sm text-[#8892B0] max-w-md leading-relaxed">{p.result}</p>
             </div>
-          </div>
+
+            {/* Hover veil + read-more CTA */}
+            <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{ background: 'rgba(7,11,26,.45)', backdropFilter: 'blur(2px)' }}>
+              <span className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold translate-y-3 group-hover:translate-y-0 transition-transform duration-300"
+                style={{ background: 'rgba(13,21,48,.85)', color: '#F0F4FF', border: `1px solid ${p.accent}`, boxShadow: `0 0 28px ${p.accent}45`, backdropFilter: 'blur(10px)' }}>
+                Read Case Study <ArrowUpRight size={15} style={{ color: p.accent }} />
+              </span>
+            </div>
+          </Link>
         ))}
 
         {/* End CTA panel */}

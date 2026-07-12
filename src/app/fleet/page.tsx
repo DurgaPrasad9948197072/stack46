@@ -56,7 +56,7 @@ export default function FleetPage() {
             style={{ background: 'rgba(42,172,226,.1)', border: '1px solid rgba(42,172,226,.25)', color: '#2AACE2' }}>Our Work</span>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-[1.06]" style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.02em' }}>
             <span className="block"><AnimatedText segments={[{ text: 'Every industry.' }]} /></span>
-            <span className="block"><AnimatedText delay={0.24} segments={[{ text: 'One unified agency.', style: { background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } }]} /></span>
+            <span className="block"><AnimatedText delay={0.24} segments={[{ text: 'One unified agency.', className: 'accent-serif', style: { background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } }]} /></span>
           </h1>
           <p className="text-[#8892B0] text-xl leading-relaxed mb-10 max-w-2xl mx-auto">
             From FinTech to HealthTech — we build digital products that define market leaders.

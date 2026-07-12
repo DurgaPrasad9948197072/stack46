@@ -159,7 +159,7 @@ export default function ServicesTimeline() {
             style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.035em' }}>
             <AnimatedText segments={[
               { text: 'One agency.' },
-              { text: 'Zero gaps.', className: 'grad-anim' },
+              { text: 'Zero gaps.', className: 'grad-anim accent-serif' },
             ]} />
           </h2>
           <p className="text-[#8892B0] mt-5 text-sm md:text-base max-w-md">

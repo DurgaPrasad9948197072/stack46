@@ -98,7 +98,7 @@ export default function PortfolioCarousel() {
               Portfolio
             </span>
             <h2 className="text-4xl md:text-6xl font-black leading-[0.97]" style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.035em' }}>
-              <span style={{ background: 'linear-gradient(135deg,#06b6d4,#2AACE2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span className="accent-serif" style={{ background: 'linear-gradient(135deg,#06b6d4,#2AACE2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Any project.
               </span>{' '}
               Any scale.
@@ -200,12 +200,6 @@ export default function PortfolioCarousel() {
                       className={`w-full h-full object-cover transition-all duration-700 ${isActive ? 'grayscale-0 blur-0 brightness-100' : 'grayscale blur-[2px] brightness-50'}`}
                       draggable={false} loading="lazy" />
 
-                    {/* Giant index */}
-                    <div className="absolute top-5 right-7 font-black select-none leading-none"
-                      style={{ fontSize: 'clamp(3.5rem,6vw,5.5rem)', color: f.color, opacity: 0.22, fontFamily: 'var(--font-grotesk)' }}>
-                      {String(index + 1).padStart(2, '0')}
-                    </div>
-
                     {/* Live-marker */}
                     <div className={`absolute top-7 left-7 flex items-center gap-2.5 transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
                       <span className="w-2 h-2 rounded-full" style={{ background: f.color, boxShadow: `0 0 10px ${f.color}` }} />
@@ -224,7 +218,7 @@ export default function PortfolioCarousel() {
                           style={{ background: 'linear-gradient(to top, rgba(7,11,26,.95) 0%, rgba(7,11,26,.4) 60%, transparent 100%)' }}>
                           <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.18em] w-fit mb-3"
                             style={{ background: `${f.color}20`, color: f.color, border: `1px solid ${f.color}40` }}>
-                            {index + 1} · {f.label}
+                            {f.label}
                           </span>
                           <p className="text-[#F0F4FF] font-bold text-lg md:text-xl leading-snug tracking-tight" style={{ fontFamily: 'var(--font-grotesk)' }}>
                             {f.description}

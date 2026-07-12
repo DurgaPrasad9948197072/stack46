@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRight, ArrowUp, CalendarDays } from 'lucide-react'
@@ -20,7 +21,7 @@ const cn = (...cls: (string | undefined | false)[]) => cls.filter(Boolean).join(
 // -------------------------------------------------------------------------
 const STYLES = `
 .cinematic-footer-wrapper {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-dm), 'Instrument Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
 
   /* STACK46 brand tokens */
@@ -220,6 +221,10 @@ export function CinematicFooter() {
   const giantTextRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const linksRef = useRef<HTMLDivElement>(null)
+  /* the footer lives in the root layout and survives client navigation —
+     re-key the animations on every route so trigger positions are measured
+     against the NEW page's height, not the first page visited */
+  const pathname = usePathname()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -235,6 +240,7 @@ export function CinematicFooter() {
           scrollTrigger: {
             trigger: wrapperRef.current,
             start: 'top 80%', end: 'bottom bottom', scrub: 1,
+            invalidateOnRefresh: true,
           },
         }
       )
@@ -247,13 +253,22 @@ export function CinematicFooter() {
           scrollTrigger: {
             trigger: wrapperRef.current,
             start: 'top 40%', end: 'bottom bottom', scrub: 1,
+            invalidateOnRefresh: true,
           },
         }
       )
     }, wrapperRef)
 
-    return () => ctx.revert()
-  }, [])
+    /* re-measure once the new route's content (fonts, images, pinned
+       sections) has settled so start/end land exactly right */
+    const early = setTimeout(() => ScrollTrigger.refresh(), 150)
+    const late = setTimeout(() => ScrollTrigger.refresh(), 800)
+    return () => {
+      clearTimeout(early)
+      clearTimeout(late)
+      ctx.revert()
+    }
+  }, [pathname])
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
@@ -294,7 +309,7 @@ export function CinematicFooter() {
               ref={headingRef}
               className="footer-text-glow text-5xl md:text-8xl font-black tracking-tighter mb-12 text-center"
               style={{ fontFamily: 'var(--font-grotesk)' }}>
-              Ready to build?
+              Ready to <span className="accent-serif">build?</span>
             </h2>
 
             <div ref={linksRef} className="flex flex-col items-center gap-6 w-full">

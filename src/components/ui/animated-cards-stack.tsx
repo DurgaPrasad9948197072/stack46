@@ -93,7 +93,7 @@ export default function TestimonialsStack() {
         </span>
         <h2 className="text-4xl md:text-5xl font-black leading-[1.06]" style={{ fontFamily: 'var(--font-grotesk)', letterSpacing: '-0.02em' }}>
           150+ companies{' '}
-          <span style={{ background: 'linear-gradient(135deg,#FFC845,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <span className="accent-serif" style={{ background: 'linear-gradient(135deg,#FFC845,#f97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             trust us.
           </span>
         </h2>

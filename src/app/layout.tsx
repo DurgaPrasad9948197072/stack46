@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Space_Grotesk, Plus_Jakarta_Sans, DM_Sans } from 'next/font/google'
+import { Bricolage_Grotesque, Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import AuroraBackground from '@/components/AuroraBackground'
 import IntroWrapper from '@/components/IntroWrapper'
@@ -8,17 +8,26 @@ import SmoothScroll from '@/components/SmoothScroll'
 import CustomCursor from '@/components/CustomCursor'
 import ScrollProgress from '@/components/ScrollProgress'
 
-const grotesk = Space_Grotesk({
+/* Distinctive type system:
+   Bricolage Grotesque — characterful display face for every heading
+   Instrument Sans     — crisp, modern body copy
+   Instrument Serif    — italic accent for highlighted words
+   JetBrains Mono      — technical labels, counters, taglines */
+const grotesk = Bricolage_Grotesque({
   subsets: ['latin'], variable: '--font-grotesk', display: 'swap',
-  weight: ['400', '500', '600', '700'],
-})
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'], variable: '--font-jakarta', display: 'swap',
   weight: ['400', '500', '600', '700', '800'],
 })
-const dm = DM_Sans({
+const body = Instrument_Sans({
   subsets: ['latin'], variable: '--font-dm', display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700'],
+})
+const serif = Instrument_Serif({
+  subsets: ['latin'], variable: '--font-serif', display: 'swap',
+  weight: '400', style: ['normal', 'italic'],
+})
+const mono = JetBrains_Mono({
+  subsets: ['latin'], variable: '--font-mono-brand', display: 'swap',
+  weight: ['400', '500', '700'],
 })
 
 export const metadata: Metadata = {
@@ -42,7 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${grotesk.variable} ${jakarta.variable} ${dm.variable}`}
+      className={`${grotesk.variable} ${body.variable} ${serif.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
       <head>

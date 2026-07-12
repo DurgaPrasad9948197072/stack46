@@ -15,7 +15,9 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-dm)', 'sans-serif'],
         heading: ['var(--font-grotesk)', 'sans-serif'],
-        display: ['var(--font-jakarta)', 'sans-serif'],
+        display: ['var(--font-grotesk)', 'sans-serif'],
+        serif: ['var(--font-serif)', 'serif'],
+        mono: ['var(--font-mono-brand)', 'monospace'],
       },
       animation: {
         'spin-slow': 'spin 9s linear infinite',

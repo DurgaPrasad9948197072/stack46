@@ -160,7 +160,7 @@ export default function HomePage() {
             initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8 }}>
             <AnimatedText segments={[
               { text: 'Our track record' },
-              { text: 'speaks.', style: { background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } },
+              { text: 'speaks.', className: 'accent-serif', style: { background: 'linear-gradient(135deg,#2AACE2,#FFC845)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } },
             ]} />
           </motion.h2>
           {/* Spinning border container */}
@@ -250,7 +250,7 @@ export default function HomePage() {
                 style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.02em' }}
                 initial={{ opacity:0,y:30 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8,delay:0.1 }}>
                 Ready to build something{' '}
-                <span className="grad-anim">extraordinary?</span>
+                <span className="grad-anim accent-serif">extraordinary?</span>
               </motion.h2>
 
               <motion.p className="text-[#8892B0] text-lg mb-10 max-w-xl mx-auto"
