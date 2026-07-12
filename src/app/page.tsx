@@ -1,42 +1,17 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import {
-  motion, useInView, useTransform, useScroll,
-  useMotionValue, useSpring, useMotionTemplate,
-} from 'framer-motion'
+import { motion, useInView, useTransform, useScroll } from 'framer-motion'
 import { useReveal } from '@/hooks/useReveal'
 import TrionnHero from '@/components/home/TrionnHero'
 import HorizontalWork from '@/components/home/HorizontalWork'
+import ServicesTimeline from '@/components/home/ServicesTimeline'
 import TestimonialsStack from '@/components/ui/animated-cards-stack'
+import PortfolioCarousel from '@/components/ui/feature-carousel'
 import AnimatedText from '@/components/ui/AnimatedText'
-import {
-  Code2, Cloud, Sparkles, Smartphone, Plug, ShieldCheck,
-  ArrowUpRight,
-} from 'lucide-react'
 
 /* ══════════════════ DATA ══════════════════ */
 const MARQUEE_TECH = ['React','Next.js','TypeScript','Node.js','Python','Go','AWS','GCP','Azure','Docker','Kubernetes','PostgreSQL','GraphQL','Figma','Flutter','Terraform']
-
-const FEATURES = [
-  { icon: Code2,      title: 'Full-Stack Development', desc: 'Next.js, Node.js, TypeScript — pixel-perfect UIs to bulletproof APIs, owned end-to-end.', accent: '#2AACE2', span: 1 },
-  { icon: Cloud,      title: 'Cloud & DevOps',          desc: 'AWS, GCP, Kubernetes — zero-downtime deployments, IaC and automated pipelines from day one.', accent: '#1E2A78', span: 1 },
-  { icon: Sparkles,   title: 'AI & ML Solutions',       desc: 'LLMs, computer vision and predictive analytics — production grade, not proof-of-concept.', accent: '#FFC845', span: 1 },
-  { icon: Smartphone, title: 'Mobile Development',      desc: 'React Native & Flutter — iOS and Android apps with native performance and 5-star UX.',    accent: '#22c55e', span: 1 },
-  { icon: Plug,       title: 'API & Integrations',      desc: 'REST, GraphQL, webhooks — every tool in your ecosystem connected seamlessly at scale.',    accent: '#06b6d4', span: 2 },
-  { icon: ShieldCheck,title: 'Security & Compliance',   desc: 'SOC 2, GDPR, OWASP Top 10 — security baked in from the very first commit, not bolted on.',  accent: '#a855f7', span: 1 },
-]
-
-const GALLERY_ITEMS = [
-  { label: 'SaaS Platforms', count: '28+', img: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=700&q=80', color: '#2AACE2' },
-  { label: 'E-Commerce',     count: '31+', img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=80', color: '#FFC845' },
-  { label: 'Mobile Apps',    count: '22+', img: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=700&q=80', color: '#22c55e' },
-  { label: 'AI Solutions',   count: '14+', img: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=700&q=80', color: '#a855f7' },
-  { label: 'FinTech',        count: '19+', img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=700&q=80', color: '#ef4444' },
-  { label: 'Enterprise',     count: '15+', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=700&q=80', color: '#06b6d4' },
-  { label: 'HealthTech',     count: '11+', img: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=700&q=80', color: '#f97316' },
-  { label: 'EdTech',         count: '8+',  img: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=700&q=80', color: '#4DD0C4' },
-]
 
 const STATS = [
   { val: 150, suffix: '+', label: 'Projects Delivered', color: '#2AACE2', max: 150, pct: 1 },
@@ -97,85 +72,6 @@ function StatRing({ val, suffix, label, color, pct }: { val: number; suffix: str
       </div>
       <p className="text-sm text-[#8892B0] text-center font-medium">{label}</p>
     </motion.div>
-  )
-}
-
-/* 3D mouse-tilt card wrapper */
-function TiltCard({ children, accent, className = '', style }: { children: React.ReactNode; accent: string; className?: string; style?: React.CSSProperties }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const mx = useMotionValue(0); const my = useMotionValue(0)
-  const sx = useSpring(mx, { stiffness: 130, damping: 18 })
-  const sy = useSpring(my, { stiffness: 130, damping: 18 })
-  const rotX = useTransform(sy, [-0.5, 0.5], [9, -9])
-  const rotY = useTransform(sx, [-0.5, 0.5], [-9, 9])
-  const glowX = useTransform(sx, [-0.5, 0.5], [10, 90])
-  const glowY = useTransform(sy, [-0.5, 0.5], [10, 90])
-  const bg = useMotionTemplate`radial-gradient(circle at ${glowX}% ${glowY}%, ${accent}28 0%, transparent 55%)`
-  const onMove = (e: React.MouseEvent) => {
-    if (!ref.current) return
-    const r = ref.current.getBoundingClientRect()
-    mx.set((e.clientX - r.left) / r.width - 0.5)
-    my.set((e.clientY - r.top) / r.height - 0.5)
-  }
-  return (
-    <motion.div ref={ref} onMouseMove={onMove} onMouseLeave={() => { mx.set(0); my.set(0) }}
-      style={{ rotateX: rotX, rotateY: rotY, transformStyle: 'preserve-3d', ...style }}
-      whileHover={{ scale: 1.025, z: 24 }} className={`group relative cursor-default ${className}`}>
-      <motion.div className="absolute inset-0 rounded-2xl pointer-events-none z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: bg }} />
-      {children}
-    </motion.div>
-  )
-}
-
-/* Scroll-scrubbed reveal: position/rotation are a pure function of scroll,
-   staggered per card by shifting the progress range — fully reversible */
-function ScrubReveal({ children, index = 0, className = '' }: { children: React.ReactNode; index?: number; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  /* Long scrub window: the reveal finishes only once the element has climbed
-     to 38% of the viewport — slow, fully scroll-owned entrance. */
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 1.05', 'start 0.38'] })
-  const lag = Math.min(index * 0.07, 0.35)
-  const y = useTransform(scrollYProgress, [lag, 1], [110, 0])
-  const opacity = useTransform(scrollYProgress, [lag, 1], [0, 1])
-  const rotateX = useTransform(scrollYProgress, [lag, 1], [-18, 0])
-  const scale = useTransform(scrollYProgress, [lag, 1], [0.9, 1])
-  return (
-    <motion.div ref={ref} className={className}
-      style={{ y, opacity, rotateX, scale, transformPerspective: 900, willChange: 'transform' }}>
-      {children}
-    </motion.div>
-  )
-}
-
-/* Horizontal drag gallery */
-function DragGallery() {
-  const [dragging, setDragging] = useState(false)
-  const constraintRef = useRef<HTMLDivElement>(null)
-  return (
-    <div ref={constraintRef} className="overflow-hidden cursor-grab active:cursor-grabbing select-none" style={{ perspective: 900 }}>
-      <motion.div drag="x" dragConstraints={constraintRef} dragElastic={0.08}
-        onDragStart={() => setDragging(true)} onDragEnd={() => setDragging(false)}
-        className="flex gap-5 py-6 px-2" style={{ width: 'max-content' }}>
-        {GALLERY_ITEMS.map((g, i) => (
-          <motion.div key={g.label}
-            style={{ width: 300, height: 400, flexShrink: 0, border: '1px solid rgba(255,255,255,.08)' }}
-            whileHover={!dragging ? { scale: 1.04, rotateY: i % 2 === 0 ? -4 : 4, z: 30 } : {}}
-            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-            className="rounded-3xl overflow-hidden relative">
-            <img src={g.img} alt={g.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105" draggable={false} />
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,rgba(7,11,26,.9) 0%,rgba(7,11,26,.1) 55%,transparent 100%)' }} />
-            <div className="absolute top-5 right-5 font-black text-5xl select-none" style={{ color: g.color, opacity: 0.15, fontFamily: 'var(--font-grotesk)' }}>
-              {String(i + 1).padStart(2, '0')}
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold mb-2"
-                style={{ background: `${g.color}20`, color: g.color, border: `1px solid ${g.color}40` }}>{g.count} delivered</span>
-              <h3 className="font-black text-xl text-[#F0F4FF]" style={{ fontFamily: 'var(--font-grotesk)' }}>{g.label}</h3>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-    </div>
   )
 }
 
@@ -247,72 +143,14 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ████████ SERVICES — 3D Tilt Cards ████████ */}
-      <section id="services" className="relative z-10 py-32 px-6" style={{ perspective:1400 }}>
-        <div className="max-w-7xl mx-auto">
-          <motion.div className="mb-20" initial={{ opacity:0,y:40 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.9,ease:[0.16,1,.3,1] }}>
-            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(42,172,226,.1)',border:'1px solid rgba(42,172,226,.25)',color:'#2AACE2' }}>What We Build</span>
-            <h2 className="text-5xl md:text-6xl font-black leading-[0.97] max-w-3xl" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.035em' }}>
-              <AnimatedText segments={[
-                { text: 'One agency.' },
-                { text: 'Zero gaps.', className: 'grad-anim' },
-              ]} />
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-            {FEATURES.map((f, i) => (
-              <ScrubReveal key={f.title} index={i}
-                className={f.span===2 ? 'sm:col-span-2' : ''}>
-                <TiltCard accent={f.accent} className="h-full">
-                  <div className="glass-md rounded-2xl p-6 border border-white/[0.07] h-full relative z-10 transition-border duration-300 group-hover:border-white/[0.14]">
-                    <motion.div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
-                      style={{ background:`${f.accent}20`,border:`1px solid ${f.accent}35` }}
-                      whileHover={{ rotate:[0,5,-5,0],scale:1.1 }}
-                      transition={{ duration:0.4 }}>
-                      <f.icon size={22} style={{ color:f.accent }} />
-                    </motion.div>
-                    <h3 className="font-bold text-base text-[#F0F4FF] mb-2 break-words" style={{ fontFamily:'var(--font-grotesk)' }}>{f.title}</h3>
-                    <p className="text-[#8892B0] text-sm leading-relaxed break-words">{f.desc}</p>
-                    <motion.div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                      whileHover={{ x:2 }}>
-                      <ArrowUpRight size={16} style={{ color:f.accent }} />
-                    </motion.div>
-                  </div>
-                </TiltCard>
-              </ScrubReveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ████████ SERVICES — Scroll-Beam Timeline ████████ */}
+      <ServicesTimeline />
 
       {/* ████████ CASE STUDIES — Pinned Horizontal Journey ████████ */}
       <HorizontalWork />
 
-      {/* ████████ PORTFOLIO — Drag Gallery ████████ */}
-      <section className="relative z-10 py-20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 mb-12">
-          <motion.div className="flex items-end justify-between" initial={{ opacity:0,y:32 }} whileInView={{ opacity:1,y:0 }} viewport={{ once: false, amount: 0.2 }} transition={{ duration:0.8 }}>
-            <div>
-              <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-5" style={{ background:'rgba(77,208,196,.1)',border:'1px solid rgba(77,208,196,.25)',color:'#4DD0C4' }}>Portfolio</span>
-              <h2 className="text-5xl md:text-6xl font-black leading-[0.97]" style={{ fontFamily:'var(--font-grotesk)',letterSpacing:'-0.035em' }}>
-                <AnimatedText segments={[
-                  { text: 'Any project.', style: { background: 'linear-gradient(135deg,#06b6d4,#2AACE2)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' } },
-                  { text: 'Any scale.' },
-                ]} />
-              </h2>
-            </div>
-            <Link href="/fleet" className="hidden md:flex items-center gap-2 text-sm font-semibold mb-2" style={{ color:'#2AACE2' }}>
-              View all work <ArrowUpRight size={15} />
-            </Link>
-          </motion.div>
-        </div>
-        {/* Drag hint */}
-        <motion.p className="text-center text-xs text-[#8892B0] mb-4" initial={{ opacity:0 }} whileInView={{ opacity:1 }} viewport={{ once: false, amount: 0.2 }}>
-          ← Drag to explore →
-        </motion.p>
-        <DragGallery />
-      </section>
+      {/* ████████ PORTFOLIO — Pinned Scroll Carousel (same engine as Case Studies) ████████ */}
+      <PortfolioCarousel />
 
       {/* ████████ STATS — SVG Rings ████████ */}
       <section className="relative z-10 py-28 px-6">
